@@ -1,10 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Audiowide } from "next/font/google"
+import { Bruno_Ace } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "sonner"
 
-const font = Audiowide({
+const font = Bruno_Ace({
   subsets: ["latin"],
   weight: ["400"],
 })

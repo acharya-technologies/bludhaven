@@ -273,7 +273,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header user={user} />
+      <Header />
       <main className="max-w-7xl mx-auto sm:px-6 sm:py-6">
         <div className="bg-gray-950 border border-gray-800 rounded-lg p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

@@ -7,7 +7,7 @@ import { getSupabaseClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { TrendingUp, Users, CheckCircle, Clock, Lock, Unlock, DollarSign, LogOut, ArrowRight, Activity, Target, AlertTriangle, Plus, Calendar, Edit, Folder } from "lucide-react"
+import { TrendingUp, Users, CheckCircle, Clock, Lock, Unlock, DollarSign, LogOut, ArrowRight, Activity, Target, AlertTriangle, Plus, Calendar, Edit, Folder, Shield } from "lucide-react"
 import Header from '@/components/Header'
 
 // Types
@@ -49,11 +49,10 @@ const StatCard = ({ icon: Icon, label, value, subtext, color }: any) => (
           <p className={`text-3xl font-bold ${color}`}>{value}</p>
           {subtext && <p className="text-xs text-gray-500 mt-1">{subtext}</p>}
         </div>
-        <div className={`p-3 rounded-lg bg-gradient-to-br ${
-          color === 'text-red-500' ? 'from-red-500/20 to-red-600/10' :
-          color === 'text-emerald-500' ? 'from-emerald-500/20 to-emerald-600/10' :
-          color === 'text-blue-500' ? 'from-blue-500/20 to-blue-600/10' : 'from-gray-500/20 to-gray-600/10'
-        }`}>
+        <div className={`p-3 rounded-lg bg-gradient-to-br ${color === 'text-red-500' ? 'from-red-500/20 to-red-600/10' :
+            color === 'text-emerald-500' ? 'from-emerald-500/20 to-emerald-600/10' :
+              color === 'text-blue-500' ? 'from-blue-500/20 to-blue-600/10' : 'from-gray-500/20 to-gray-600/10'
+          }`}>
           <Icon className={`w-6 h-6 ${color}`} />
         </div>
       </div>
@@ -67,8 +66,8 @@ const StatusPieChart = ({ projects }: { projects: Project[] }) => {
     advance: projects.filter(p => p.status === 'advance').length,
     delivered: projects.filter(p => p.status === 'delivered').length,
     archived: projects.filter(p => p.status === 'archived').length
-  }).filter(([_, value]) => value > 0).map(([name, value]) => ({ 
-    name: name.charAt(0).toUpperCase() + name.slice(1), value 
+  }).filter(([_, value]) => value > 0).map(([name, value]) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1), value
   }))
 
   return (
@@ -135,8 +134,8 @@ const RecentProjects = ({ projects }: { projects: Project[] }) => (
   <Card className="bg-gray-950 border-gray-800">
     <CardHeader className="pb-4">
       <div className="flex items-center justify-between">
-        <CardTitle className="text-white flex items-center gap-2 text-lg">
-          <div className="w-1 h-6 bg-red-600 rounded-full" />
+        <CardTitle className="text-white flex items-center gap-2 text-lg ">
+          <div className="w-1 h-6 bg-red-600 rounded-full " />
           Recent Projects
         </CardTitle>
         <Link href="/projects">
@@ -155,14 +154,14 @@ const RecentProjects = ({ projects }: { projects: Project[] }) => (
                 <p className="text-white font-medium truncate group-hover:text-red-500 transition-colors">
                   {project.title}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">{project.leader}</p>
+                <p className="text-xs text-gray-500 mt-1">{project.leader} {(project.deadline && new Date(project.deadline) < new Date()) && (<span className='text-red-500 ml-2'> • Overdue</span>)}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
                   <p className={`text-xs font-medium ${THEME.priority[project.priority as keyof typeof THEME.priority]}`}>
                     {project.priority}
                   </p>
-                  <p className="text-xs text-gray-500">{Math.round(project.amount_received * 100/project.finalized_amount)}%</p>
+                  <p className="text-xs text-gray-500">{Math.round(project.amount_received * 100 / project.finalized_amount)}%</p>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium border ${THEME.status[project.status as keyof typeof THEME.status].bg} ${THEME.status[project.status as keyof typeof THEME.status].text} border-gray-700`}>
                   {project.status}
@@ -190,12 +189,12 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
   const toggleLock = () => {
     if (locked) {
       const pass = prompt("Enter security code:")
-      if (pass === "Redhood") {
+      if (pass === process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE) {
         setLocked(false)
         setAttempts(0)
       } else {
         setAttempts(prev => prev + 1)
-        alert(`Access denied. ${3 - attempts} attempts remaining.`)
+        alert(`Access denied. ${3 - attempts} attempts remaining. ${process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE}`)
         if (attempts >= 2) setTimeout(() => setAttempts(0), 30000)
       }
     } else {
@@ -204,12 +203,9 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-gray-950 to-gray-900 border-gray-800 relative overflow-hidden">
-      <button onClick={toggleLock} className="absolute top-4 right-4 text-gray-400 hover:text-white transition z-10 bg-gray-900 rounded-lg p-2 border border-gray-800">
-        {locked ? <Lock size={16} /> : <Unlock size={16} />}
-      </button>
-
-      <div className={`transition duration-300 ${locked ? "blur-md pointer-events-none" : "blur-0"}`}>
+    <Card className="bg-gradient-to-br from-gray-950 to-slate-950 border-gray-800 relative overflow-hidden">
+      {/* Content - Always visible but blurred when locked */}
+      <div className={`transition-all duration-500 ${locked ? "blur-md scale-95" : "blur-0 scale-100"}`}>
         <CardHeader className="pb-4">
           <CardTitle className="text-white flex items-center gap-2 text-lg">
             <div className="w-1 h-6 bg-red-600 rounded-full" />
@@ -223,7 +219,7 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
                 <Target className="w-5 h-5 text-red-400" />
                 <p className="text-sm text-gray-400">Total Revenue</p>
               </div>
-              <p className="text-3xl font-bold text-white">₹{totalRevenue.toLocaleString("en-IN")}</p>
+              <p className="text-3xl font-bold text-white">₹{locked ? "###" : totalRevenue.toLocaleString("en-IN")}</p>
               <p className="text-xs text-gray-500">{activeProjects.length} active projects</p>
             </div>
 
@@ -232,11 +228,14 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
                 <CheckCircle className="w-5 h-5 text-emerald-400" />
                 <p className="text-sm text-gray-400">Received</p>
               </div>
-              <p className="text-3xl font-bold text-emerald-400">₹{totalReceived.toLocaleString("en-IN")}</p>
+              <p className="text-3xl font-bold text-emerald-400">₹{locked ? "###" : totalReceived.toLocaleString("en-IN")}</p>
               <div className="w-full bg-gray-800 rounded-full h-2 mt-2">
-                <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${percentage}%` }} />
+                <div
+                  className="bg-emerald-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${percentage}%` }}
+                />
               </div>
-              <p className="text-xs text-gray-500">{percentage.toFixed(1)}% collected</p>
+              <p className="text-xs text-gray-500">{locked ? "###" : percentage.toFixed(1)}% collected</p>
             </div>
 
             <div className="space-y-2">
@@ -244,19 +243,34 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
                 <AlertTriangle className="w-5 h-5 text-yellow-400" />
                 <p className="text-sm text-gray-400">Pending</p>
               </div>
-              <p className="text-3xl font-bold text-yellow-400">₹{pending.toLocaleString("en-IN")}</p>
+              <p className="text-3xl font-bold text-yellow-400">₹{locked ? "###" : pending.toLocaleString("en-IN")}</p>
               <p className="text-xs text-gray-500">Awaiting payment</p>
             </div>
           </div>
         </CardContent>
       </div>
 
+      {/* Single Central Shield Overlay - Click to reveal */}
       {locked && (
-        <div className="absolute inset-0 flex items-center justify-center flex-col gap-3 text-gray-500 text-sm bg-black/50 backdrop-blur-sm rounded-lg">
-          <Lock className="w-8 h-8 text-red-500" />
-          <p>Classified Information</p>
-          <p className="text-xs text-gray-600">Click to authenticate</p>
+        <div
+          className="absolute inset-0 flex items-center justify-center flex-col gap-3 text-gray-400 bg-black/70 backdrop-blur-sm rounded-lg cursor-pointer transition-all duration-300 hover:bg-black/80"
+          onClick={toggleLock}
+        >
+          <Shield className="w-12 h-12 text-red-500 mb-2" />
+          <p className="text-lg font-semibold text-white">Classified Information</p>
+          <p className="text-sm">Authentication required</p>
+          <p className="text-xs text-gray-500 mt-1">Click to authenticate</p>
         </div>
+      )}
+
+      {/* Small Lock Button to re-lock */}
+      {!locked && (
+        <button
+          onClick={toggleLock}
+          className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-gray-900/80 rounded-lg p-2 border border-gray-700 hover:border-red-500"
+        >
+          <Shield className="w-4 h-4" />
+        </button>
       )}
     </Card>
   )
@@ -273,11 +287,11 @@ export default function DashboardPage() {
       const supabase = getSupabaseClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) redirect("/auth/login")
-      
+
       setUser(user as User)
 
       const { data } = await supabase.from("bludhaven_projects").select("*").eq('user_id', user.id)
-      .order("updated_at", { ascending: false })
+        .order("updated_at", { ascending: false })
       setProjects(data || [])
       setLoading(false)
 
@@ -313,10 +327,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header user={user} />
-      
+      <Header />
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-    
+
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard icon={Target} label="Active Missions" value={stats.active} color="text-red-500" />
           <StatCard icon={Folder} label="Total Projects" value={stats.total} color="text-blue-500" />
@@ -324,13 +338,13 @@ export default function DashboardPage() {
           <StatCard icon={Clock} label="Hours Logged" value={`${stats.hoursActual}/${stats.hoursEstimated}`} subtext="Actual / Estimated" color="text-gray-400" />
         </div>
 
+        <RevenueStats projects={projects} />
         <div className="grid lg:grid-cols-2 gap-6">
           <StatusPieChart projects={projects} />
           <PriorityBarChart projects={projects} />
         </div>
 
         <RecentProjects projects={projects} />
-        <RevenueStats projects={projects} />
       </main>
     </div>
   )
