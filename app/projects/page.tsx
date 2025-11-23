@@ -324,29 +324,29 @@ export default function ProjectsPage() {
                     const isOverdue = project.deadline && new Date(project.deadline) < new Date()
                     return (
                       <tr key={project.id} className="hover:bg-gray-900/50 transition-colors">
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <div className="max-w-[200px]">
                             <p className="text-white font-medium text-sm truncate">{project.title}</p>
                             <p className="text-gray-500 text-xs truncate">{project.description || "No description"}</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <div>
                             <p className="text-sm text-white">{project.leader}</p>
                             {project.contact && <p className="text-xs text-gray-500">{project.contact}</p>}
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${THEME.status[project.status]}`}>
                             {project.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${THEME.priority[project.priority]}`}>
                             {project.priority}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-2 w-32">
                             <div className="w-20 bg-gray-800 rounded-full h-1.5 overflow-hidden">
                               <div className="bg-red-600 h-full transition-all duration-300" style={{ width: `${project.progress}%` }} />
@@ -354,20 +354,20 @@ export default function ProjectsPage() {
                             <span className="text-xs text-gray-400 w-8">{project.progress}%</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <div className="space-y-1 blur hover:blur-none transition-all duration-500 ease-in-out cursor-pointer">
                             <p className="text-sm text-white font-medium">₹{project.finalized_amount.toLocaleString("en-IN")}</p>
                             <p className="text-xs text-gray-500">₹{project.amount_received.toLocaleString("en-IN")} received</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <div className="flex flex-col">
                             <span className={`text-sm ${isOverdue ? "text-red-400" : "text-gray-400"} flex items-center gap-1`}>
                               <Calendar className="w-3 h-3 text-gray-500" />{formatDate(project.deadline)}</span>
                             {project.booking_date && <p className="text-xs text-gray-600">{project.booking_date}</p>}
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <span className={`text-sm font-medium ${payment.color}`}>{payment.text}</span>
                         </td>
                         <td className="px-4 py-3 text-right">

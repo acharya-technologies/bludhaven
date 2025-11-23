@@ -7,7 +7,16 @@
    RED HOOD / BLUDHAVEN THEME
    Dark, gritty, red-accented aesthetic
 ======================================== */
+html {
+    scroll-behavior: smooth;
+  scroll-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Slower ease */
+  transition-duration: 1000ms; /* Increased duration */
 
+}
+
+* {
+  scroll-behavior: smooth !important;
+}
 :root {
   /* Base Colors */
   --background: oklch(0.08 0 0);

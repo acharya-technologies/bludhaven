@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff, AlertCircle, Sword, Zap, Sparkles, Target, Scan } from "lucide-react"
 import Link from "next/link"
-import { GiKatana, GiRose, GiAbstract089 } from "react-icons/gi"
+import { GiSpinningSword , GiRose, GiAbstract103 } from "react-icons/gi"
 import { HashLoader } from "react-spinners"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -175,9 +175,9 @@ export default function RegisterPage() {
               transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
               className="absolute inset-0"
             >
-              <GiAbstract089 className="w-full h-full text-violet-500/10" />
+              <GiAbstract103 className="w-full h-full text-violet-500/10" />
             </motion.div>
-            <GiKatana className="w-14 h-14 text-violet-400 relative z-10" />
+            <GiSpinningSword  className="w-14 h-14 text-violet-400 relative z-10" />
           </motion.div>
           
           <motion.h1
@@ -371,9 +371,9 @@ export default function RegisterPage() {
           <motion.p
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="text-xs text-violet-500 font-mono"
+            className="text-sm text-violet-500 font-mono"
           >
-            Trusted by Red Hood
+            <Link href="/guest">Guest?</Link>
           </motion.p>
         </motion.div>
       </div>

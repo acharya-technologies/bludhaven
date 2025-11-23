@@ -127,7 +127,7 @@ const DeleteProjectDialog = ({ project, open, onOpenChange, onDelete }: {
   const [loading, setLoading] = useState(false)
 
   const handleDelete = async () => {
-    if (password !== process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE) {
+    if (password !== process.env.NEXT_PUBLIC_SECRET_PASSWORD) {
       toast.error("Incorrect password")
       return
     }
@@ -181,7 +181,7 @@ const DeleteProjectDialog = ({ project, open, onOpenChange, onDelete }: {
           <Button
             type="button"
             onClick={handleDelete}
-            disabled={loading || password !== process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE}
+            disabled={loading || password !== process.env.NEXT_PUBLIC_SECRET_PASSWORD}
             className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
           >
             {loading ? "Deleting..." : "Delete Project"}
@@ -1226,7 +1226,7 @@ export default function ProjectDetailPage() {
                     setGlobalDisable(true)
                   } else {
                     const pass = prompt("Enter password to enable editing:")
-                    if (pass === process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE) {
+                    if (pass === process.env.NEXT_PUBLIC_SECRET_PASSWORD) {
                       setGlobalDisable(false)
                       toast.success("Edit mode enabled")
                     } else {

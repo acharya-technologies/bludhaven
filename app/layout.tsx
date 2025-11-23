@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html className="scroll-smooth" lang="en">
       <body className={`${font.className} bg-black text-white`}>{children}
 
         <Toaster position="top-right" richColors />

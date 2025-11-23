@@ -189,12 +189,12 @@ const RevenueStats = ({ projects }: { projects: Project[] }) => {
   const toggleLock = () => {
     if (locked) {
       const pass = prompt("Enter security code:")
-      if (pass === process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE) {
+      if (pass === process.env.NEXT_PUBLIC_SECRET_PASSWORD) {
         setLocked(false)
         setAttempts(0)
       } else {
         setAttempts(prev => prev + 1)
-        alert(`Access denied. ${3 - attempts} attempts remaining. ${process.env.NEXT_PUBLIC_SECRET_REVENUE_CODE}`)
+        alert(`Access denied. ${3 - attempts} attempts remaining. ${process.env.NEXT_PUBLIC_SECRET_PASSWORD}`)
         if (attempts >= 2) setTimeout(() => setAttempts(0), 30000)
       }
     } else {

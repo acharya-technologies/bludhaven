@@ -321,10 +321,10 @@ const Header = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="px-3 py-2 border-t border-gray-800 mt-2 pt-3"
+                      className="px-2 py-2 border-t border-gray-800 mt-2 pt-3"
                     >
                       <Link href="/auth/login" onClick={() => setMobileOpen(false)}>
-                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                        <Button className="w-full -p-1 bg-red-600 hover:bg-red-700 text-white">
                           Access Command
                         </Button>
                       </Link>
