@@ -362,7 +362,7 @@ export default function ProjectsPage() {
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex flex-col">
-                            <span className={`text-sm ${isOverdue ? "text-red-400" : "text-gray-400"} flex items-center gap-1`}>
+                            <span className={`text-sm ${isOverdue && (project.progress != 100) ? "text-red-400" : "text-gray-400"} flex items-center gap-1`}>
                               <Calendar className="w-3 h-3 text-gray-500" />{formatDate(project.deadline)}</span>
                             {project.booking_date && <p className="text-xs text-gray-600">{project.booking_date}</p>}
                           </div>
@@ -420,7 +420,7 @@ export default function ProjectsPage() {
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div
-                        className="blur hover:blur-none transition-all cursor-pointer"
+                        className="blur hover:blur-none transition-all duration-500 ease-in-out cursor-pointer"
                         onClick={(e) => e.currentTarget.classList.toggle('blur')}
                       >
                         <p className="text-gray-400 text-xs">Amount</p>

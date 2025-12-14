@@ -6,7 +6,8 @@ import {
   Target, Shield, Zap, Lock, ArrowRight, Skull, 
   Crown, Eye, CheckCircle2, Database, Workflow, 
   BarChart3, Users, Clock, TrendingUp, Activity,
-  Menu, X, Loader2
+  Menu, X, Loader2,
+  UserCog2
 } from "lucide-react"
 import { GiBatwingEmblem, GiBulletImpacts } from "react-icons/gi"
 import { FaDroplet, FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa6"
@@ -245,19 +246,18 @@ export default function RedHoodLandingPage() {
               </Button>
             </Link>
             
-            <a href="#features" className="w-full sm:w-auto">
+            <Link href="/guest" className="w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 className={`w-full sm:w-auto border-gray-700 text-gray-300 hover:border-red-600 hover:text-red-400 px-6 md:px-8 py-4 md:py-6 text-base md:text-lg font-semibold transition-all duration-300 ${
                   clickedButton === 'features' ? 'scale-95' : 'scale-100'
                 }`}
-                onClick={() => handleButtonClick('features')}
                 onMouseEnter={() => triggerHapticFeedback()}
               >
-                <Eye className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                View Features
+                <UserCog2 className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                Visit As Guest
               </Button>
-            </a>
+            </Link>
           </div>
 
           {/* Interactive Stats Grid */}

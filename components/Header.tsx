@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { redirect, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,10 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User, Menu, X, ChevronDown, Home, Folder, User as UserIcon } from "lucide-react"
+import { LogOut, User, Menu, X, ChevronDown, Home, Folder } from "lucide-react"
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import {GiKingJuMask} from 'react-icons/gi'
 
 interface UserData {
   id: string;
@@ -199,7 +200,7 @@ const Header = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      <User className="w-4 h-4 text-white" />
+                      <GiKingJuMask className="w-4 h-4 text-white" />
                     </motion.div>
                   </motion.div>
                 </DropdownMenuTrigger>
@@ -214,7 +215,7 @@ const Header = () => {
                   <DropdownMenuSeparator className="bg-gray-700" />
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer">
-                      <UserIcon className="w-4 h-4 mr-2" />
+                      <GiKingJuMask className="w-4 h-4 mr-2" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
@@ -231,8 +232,11 @@ const Header = () => {
             ) : (
               // Login Button for non-authenticated users (show on all pages except maybe home)
               <Link href="/auth/login">
-                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                <Button className="hidden md:block bg-red-600 hover:bg-red-700 text-white">
                   Access Command
+                </Button>
+                <Button className="md:hidden block rounded-full bg-red-600 hover:bg-red-700 text-white">
+                  <User className="w-8 h-8" />
                 </Button>
               </Link>
             )}

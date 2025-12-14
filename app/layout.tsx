@@ -10,8 +10,7 @@ const font = Bruno_Ace({
 })
 export const metadata: Metadata = {
   title: "BLUDHAVEN | Project Management for Solo Operators",
-  description: "Project Management Dashboard",
-    generator: 'v0.app'
+  description: "Project Management Dashboard"
 }
 
 export default function RootLayout({

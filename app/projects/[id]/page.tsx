@@ -1285,7 +1285,7 @@ export default function ProjectDetailPage() {
                   onClick={() => setDeleteDialogOpen(true)}
                   variant="outline"
                   className="border-red-600 text-red-400 hover:bg-red-600/10 hover:text-red-300 transition-colors whitespace-nowrap w-full lg:w-auto"
-                  disabled={deleteLoading}
+                  disabled={deleteLoading || globalDisable}
                 >
                   <TrashIcon className="w-4 h-4 mr-2" />Delete Project
                 </Button>
