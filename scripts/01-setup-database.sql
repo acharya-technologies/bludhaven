@@ -173,3 +173,139 @@ BEGIN
     RAISE NOTICE '- % profiles', profile_count;
     RAISE NOTICE 'Total: % records', project_count + installment_count + expense_count + profile_count;
 END $$;
+
+
+-- Add daily logs table for the tracker
+CREATE TABLE public.bludhaven_daily_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE,
+  log_date date NOT NULL DEFAULT CURRENT_DATE,
+  
+  -- Execution metrics
+  hours_worked numeric DEFAULT 0 CHECK (hours_worked >= 0 AND hours_worked <= 24),
+  learned_something boolean DEFAULT false,
+  wrote_code boolean DEFAULT false,
+  committed_pushed boolean DEFAULT false,
+  deployed_shipped boolean DEFAULT false,
+  
+  -- Execution details
+  what_shipped text,
+  notes text,
+  commit_count integer DEFAULT 0,
+  
+  -- Flags
+  is_completed boolean DEFAULT false,
+  is_missed boolean DEFAULT false,
+  
+  -- Constraints
+  UNIQUE(user_id, log_date),
+  
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
+);
+
+-- Indexes for performance
+CREATE INDEX idx_bludhaven_daily_logs_user_id_date ON public.bludhaven_daily_logs(user_id, log_date);
+CREATE INDEX idx_bludhaven_daily_logs_is_completed ON public.bludhaven_daily_logs(is_completed);
+CREATE INDEX idx_bludhaven_daily_logs_is_missed ON public.bludhaven_daily_logs(is_missed);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_bludhaven_daily_logs_updated_at 
+  BEFORE UPDATE ON public.bludhaven_daily_logs 
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to calculate streak
+CREATE OR REPLACE FUNCTION calculate_user_streak(user_uuid uuid)
+RETURNS TABLE (
+  current_streak integer,
+  longest_streak integer,
+  total_missed_days integer,
+  total_days_executed integer,
+  total_hours_logged numeric,
+  execution_rate numeric
+) AS $$
+DECLARE
+  streak_count integer := 0;
+  max_streak integer := 0;
+  temp_streak integer := 0;
+  prev_date date;
+  curr_date date;
+  missed_counter integer := 0;
+  executed_counter integer := 0;
+  total_hours numeric := 0;
+  total_days integer;
+BEGIN
+  -- Count executed days and hours
+  SELECT 
+    COUNT(*),
+    COALESCE(SUM(hours_worked), 0)
+  INTO executed_counter, total_hours
+  FROM bludhaven_daily_logs 
+  WHERE user_id = user_uuid 
+    AND is_completed = true;
+
+  -- Count missed days
+  SELECT COUNT(*)
+  INTO missed_counter
+  FROM bludhaven_daily_logs 
+  WHERE user_id = user_uuid 
+    AND is_missed = true;
+
+  -- Calculate streaks
+  FOR curr_date IN
+    SELECT DISTINCT log_date
+    FROM bludhaven_daily_logs
+    WHERE user_id = user_uuid
+    ORDER BY log_date DESC
+  LOOP
+    IF EXISTS (
+      SELECT 1 FROM bludhaven_daily_logs
+      WHERE user_id = user_uuid 
+        AND log_date = curr_date 
+        AND is_completed = true
+        AND hours_worked >= 3
+        AND (learned_something = true OR wrote_code = true OR committed_pushed = true)
+    ) THEN
+      IF prev_date IS NULL OR prev_date - curr_date = 1 THEN
+        temp_streak := temp_streak + 1;
+      ELSE
+        temp_streak := 1;
+      END IF;
+      
+      IF streak_count = 0 THEN
+        streak_count := temp_streak;
+      END IF;
+      
+      IF temp_streak > max_streak THEN
+        max_streak := temp_streak;
+      END IF;
+    ELSE
+      EXIT;
+    END IF;
+    
+    prev_date := curr_date;
+  END LOOP;
+
+  -- Calculate execution rate (last 30 days)
+  SELECT COUNT(*) INTO total_days
+  FROM generate_series(
+    CURRENT_DATE - 30,
+    CURRENT_DATE - 1,
+    '1 day'::interval
+  ) as day
+  WHERE EXISTS (
+    SELECT 1 FROM bludhaven_daily_logs
+    WHERE user_id = user_uuid 
+      AND log_date = day::date 
+      AND is_completed = true
+  );
+
+  RETURN QUERY SELECT
+    streak_count,
+    max_streak,
+    missed_counter,
+    executed_counter,
+    total_hours,
+    ROUND((total_days::numeric / 30) * 100, 1);
+END;
+$$ LANGUAGE plpgsql;

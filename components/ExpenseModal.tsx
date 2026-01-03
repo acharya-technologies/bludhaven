@@ -10,20 +10,22 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Loader2, CreditCard, X } from "lucide-react"
+import { CalendarIcon, Loader2, CreditCard, X, Tag } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 
 interface ExpenseModalProps {
   expense: any | null
-  projects: any[]
   onClose: () => void
   onSuccess: () => void
 }
 
-export default function ExpenseModal({ expense, projects, onClose, onSuccess }: ExpenseModalProps) {
+export default function ExpenseModal({ expense, onClose, onSuccess }: ExpenseModalProps) {
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState<Date>(expense?.date ? new Date(expense.date) : new Date())
+  const [showCustomCategory, setShowCustomCategory] = useState(false)
+  const [customCategory, setCustomCategory] = useState("")
+  
   const [formData, setFormData] = useState({
     category: expense?.category || "development",
     amount: expense?.amount || "",
@@ -32,12 +34,33 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
 
   const categories = [
     { value: "development", label: "Development" },
-    { value: "hosting", label: "Hosting" },
+    { value: "course", label: "Course" },
     { value: "marketing", label: "Marketing" },
     { value: "tools", label: "Tools & Software" },
     { value: "salary", label: "Salary" },
+    { value: "bike", label: "Bike" },
     { value: "other", label: "Other" }
   ]
+
+  // Initialize custom category if expense category is not in predefined list
+  useEffect(() => {
+    if (expense?.category) {
+      const isPredefinedCategory = categories.some(cat => cat.value === expense.category)
+      if (!isPredefinedCategory) {
+        setShowCustomCategory(true)
+        setCustomCategory(expense.category)
+        setFormData(prev => ({ ...prev, category: "other" }))
+      }
+    }
+  }, [expense])
+
+  const handleCategoryChange = (value: string) => {
+    setFormData(prev => ({ ...prev, category: value }))
+    setShowCustomCategory(value === "other")
+    if (value !== "other") {
+      setCustomCategory("")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,9 +72,14 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
 
       if (!user) throw new Error("No user found")
 
+      // Determine final category
+      const finalCategory = showCustomCategory && customCategory.trim() ? 
+        customCategory.trim().toLowerCase() : 
+        formData.category
+
       const expenseData = {
         user_id: user.id,
-        category: formData.category,
+        category: finalCategory,
         amount: parseFloat(formData.amount as string),
         description: formData.description || null,
         date: date.toISOString().split('T')[0],
@@ -94,14 +122,7 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
                 {expense ? "Edit Expense" : "Add Expense"}
               </DialogTitle>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-8 w-8 p-0 text-gray-400 hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+           
           </div>
           <DialogDescription className="text-gray-400 text-sm">
             Track your operational costs
@@ -113,7 +134,7 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
             <Label className="text-sm font-medium text-gray-300">Category</Label>
             <Select
               value={formData.category}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+              onValueChange={handleCategoryChange}
             >
               <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                 <SelectValue placeholder="Select category" />
@@ -132,6 +153,26 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
             </Select>
           </div>
 
+          {/* Custom Category Input - Appears when "Other" is selected */}
+          {showCustomCategory && (
+            <div className="space-y-2 animate-in fade-in duration-200">
+              <Label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                <Tag className="h-3.5 w-3.5 text-red-400" />
+                Custom Category
+              </Label>
+              <Input
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Enter custom category (e.g., Office Supplies, Travel, Equipment)"
+                className="bg-gray-800 border-gray-700 text-white"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500">
+                This will be saved as a new expense category
+              </p>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-300">Amount (₹)</Label>
             <Input
@@ -142,6 +183,7 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
               className="bg-gray-800 border-gray-700 text-white"
               required
               step="0.01"
+              min="0"
             />
           </div>
 
@@ -182,8 +224,6 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
             </Popover>
           </div>
 
-         
-
           <div className="flex gap-2 pt-4">
             <Button
               type="button"
@@ -195,8 +235,8 @@ export default function ExpenseModal({ expense, projects, onClose, onSuccess }: 
             </Button>
             <Button
               type="submit"
-              disabled={loading || !formData.amount}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              disabled={loading || !formData.amount || (showCustomCategory && !customCategory.trim())}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-700 disabled:text-gray-400"
             >
               {loading ? (
                 <>

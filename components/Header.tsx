@@ -11,11 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User, Menu, X, ChevronDown, Home, Folder } from "lucide-react"
+import { LogOut, User, Menu, X, ChevronDown, Home, Folder, Flame } from "lucide-react"
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import {GiKingJuMask} from 'react-icons/gi'
+import { GiKingJuMask } from 'react-icons/gi'
 
 interface UserData {
   id: string;
@@ -53,18 +53,19 @@ const Header = () => {
   }, [])
 
   // Navigation items based on route and authentication
-  const navItems = !user 
+  const navItems = !user
     ? isHomePage
       ? [
-          { href: "#features", label: "Features", icon: null },
-          { href: "#about", label: "About", icon: null }
-        ]
+        { href: "#features", label: "Features", icon: null },
+        { href: "#about", label: "About", icon: null }
+      ]
       : []
     : [
-        { href: "/dashboard", label: "Dashboard", icon: Home },
-        { href: "/projects", label: "Projects", icon: Folder },
-        { href: "/profile", label: "Profile", icon: User }
-      ]
+      { href: "/dashboard", label: "Dashboard", icon: Home },
+      { href: "/projects", label: "Projects", icon: Folder },
+      { href: "/profile", label: "Profile", icon: User },
+      { href: "/daily-tracker", label: "Daily Tracker", icon: Flame },
+    ]
 
   useEffect(() => {
     if (user?.id) fetchUserProfile()
